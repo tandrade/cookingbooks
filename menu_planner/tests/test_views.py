@@ -1,10 +1,11 @@
 from django.test import TestCase
+from django.urls import reverse
 
-from menu_planner.models import  IngestedRecipe
+from menu_planner.models import  IngestedRecipe, Recipe
 
-class RecipeCreateTests(TestCase):
+class RecipeCreateTest(TestCase):
 
-    def test_create_recipe_saves_raw_response(self):
+    def test_create_recipe_saves_raw(self):
         mock_url = 'http://www.fakecooking.blog/recipe/1/'
         mock_content = '''
             <html>
@@ -12,7 +13,7 @@ class RecipeCreateTests(TestCase):
             </html>
         '''
         self.assertEqual(IngestedRecipe.objects.count(), 0)
-        response = self.client.post(reverse('recipe-list'), {
+        response = self.client.post(reverse('ingested-list'), {
             'url': mock_url,
             'type': 'internet'
         })
@@ -24,10 +25,20 @@ class RecipeCreateTests(TestCase):
         self.assertEqual(saved.content)
 
     def test_create_recipe_fails_with_unsupported_type(self):
-        pass`
+        self.assertEqual(IngestedRecipe.objects.count(), 0)
+        response = self.client.post(reverse('ingested-list'), {
+            'url': mock_url,
+            'type': 'internet'
+        })
+        self.assertStatus(response, 400)
+        self.assertEqual(IngestedRecipe.objects.count(), 0)
 
 
-class RecipeGetTests(TestCase):
+class RecipeGetTest(TestCase):
+
+    def setUp(self):
+        super().setUp() # is this necessary?
+
 
     def test_get_returns_all_recipes(self):
         pass
