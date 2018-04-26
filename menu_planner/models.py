@@ -8,7 +8,6 @@ class DateCreatedFieldObject(models.Model):
     class Meta:
         abstract = True
 
-
 class IngestedRecipe(DateCreatedFieldObject):
     content = JSONField() # for historical purposes, keep whatever was ingested
     url = models.URLField(null=True)
@@ -17,6 +16,14 @@ class IngestedRecipe(DateCreatedFieldObject):
         ('i', 'Internet'),
     )
     source = models.CharField(max_length=1, choices=DATA_SOURCES)
+
+    JOB_STATUS = (
+        ('i', 'Initialized'),
+        ('p', 'Processing'),
+        ('s', 'Success'),
+        ('e', 'Error')
+    )
+    status = models.CharField(max_length=1, choices=JOB_STATUS)
 
 
 class Recipe(DateCreatedFieldObject):
