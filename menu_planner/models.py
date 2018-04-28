@@ -17,14 +17,6 @@ class IngestedRecipe(DateCreatedFieldObject):
     )
     source = models.CharField(max_length=1, choices=DATA_SOURCES)
 
-    JOB_STATUS = (
-        ('i', 'Initialized'),
-        ('p', 'Processing'),
-        ('s', 'Success'),
-        ('e', 'Error')
-    )
-    status = models.CharField(max_length=1, choices=JOB_STATUS)
-
 
 class Recipe(DateCreatedFieldObject):
     name = models.CharField(max_length=300)
