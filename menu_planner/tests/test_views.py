@@ -1,39 +1,50 @@
+import httpretty
 from django.test import TestCase
 from django.urls import reverse
+from unittest import mock
 
-from menu_planner.models import  IngestedRecipe, Recipe
+from menu_planner.models import  InternetRecipe, Recipe
+
 
 class RecipeCreateTest(TestCase):
+
+    def fake_ingestor(self, _args=None):
+        return "This is content to ingest."
 
     def setUp(self):
         self.mock_url = "http://www.fakecooking.blog/recipe/1/"
 
+    @httpretty.activate
+    @mock.patch('menu_planner.parsers.InternetParser.parse', fake_ingestor)
     def test_create_recipe_saves_raw(self):
         mock_content = '''
             <html>
             This is content to ingest.
             </html>
         '''
-        self.assertEqual(IngestedRecipe.objects.count(), 0)
+        httpretty.register_uri(httpretty.GET,
+                              self.mock_url,
+                              body=mock_content)
+        self.assertEqual(InternetRecipe.objects.count(), 0)
         response = self.client.post(reverse("ingested-list"), {
-            "url": self.mock_url,
-            "type": "internet"
+            "source": self.mock_url,
+            "source_type": "internet"
         })
-        self.assertStatus(response, 200)
-        self.assertEqual(IngestedRecipe.objects.count(), 1)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(InternetRecipe.objects.count(), 1)
 
-        saved = IngestedRecipe.objects.first()
-        self.assertEqual(saved.url, mock_url)
-        self.assertEqual(saved.content)
+        saved = InternetRecipe.objects.first()
+        self.assertEqual(saved.source, self.mock_url)
+        self.assertEqual(saved.content, self.fake_ingestor())
 
     def test_create_recipe_fails_with_unsupported_type(self):
-        self.assertEqual(IngestedRecipe.objects.count(), 0)
+        self.assertEqual(InternetRecipe.objects.count(), 0)
         response = self.client.post(reverse("ingested-list"), {
-            "url": self.mock_url,
-            "type": "bad_type"
+            "source": self.mock_url,
+            "source_type": "bad_type"
         })
-        self.assertStatus(response, 400)
-        self.assertEqual(IngestedRecipe.objects.count(), 0)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(InternetRecipe.objects.count(), 0)
 
 
 class RecipeGetTest(TestCase):

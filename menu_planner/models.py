@@ -1,5 +1,6 @@
 from django.db import models
-from jsonfield import JSONField
+
+from menu_planner.ingestors import InternetIngestor
 
 
 class DateCreatedFieldObject(models.Model):
@@ -8,14 +9,28 @@ class DateCreatedFieldObject(models.Model):
     class Meta:
         abstract = True
 
-class IngestedRecipe(DateCreatedFieldObject):
-    content = JSONField() # for historical purposes, keep whatever was ingested
-    url = models.URLField(null=True)
 
+class IngestedRecipe(DateCreatedFieldObject):
+    content = models.TextField() # for historical purposes, keep whatever was ingested
     DATA_SOURCES = (
-        ('i', 'Internet'),
+        ('internet', 'i'),
     )
-    source = models.CharField(max_length=1, choices=DATA_SOURCES)
+    source_type = models.CharField(max_length=1, choices=DATA_SOURCES)
+
+    def parse_content(self):
+        # children must implement this method
+        raise NotImplementedError
+
+    class Meta:
+        abstract = True
+
+
+class InternetRecipe(IngestedRecipe):
+    source = models.URLField() # for now, only supporting urls
+
+    def parse_content(self):
+        return "Blah blah blah"
+        # return InternetIngestor().ingest(self.source)
 
 
 class Recipe(DateCreatedFieldObject):

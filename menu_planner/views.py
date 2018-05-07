@@ -1,32 +1,29 @@
-from django.core.exceptions import ValidationError
-from rest_framework import viewsets
+from rest_framework import exceptions, viewsets
 
 from menu_planner.models import IngestedRecipe
 from menu_planner.parsers import InternetParser
-from menu_planner.serializers import IngestedRecipeSerializer
+from menu_planner.serializers import InternetRecipeSerializer
 
 
 class IngestedRecipeViewset(viewsets.ModelViewSet):
 
-    serializer_class = IngestedRecipeSerializer
+    def get_serializer_class(self):
+        doc_type = self.request.POST.get("source_type")
+        if doc_type == "internet":
+            return InternetRecipeSerializer
+        raise exceptions.ValidationError("That source type is not supported.")
+
+    def perform_create(self, serializer):
+        content = None
+        if serializer.validated_data["source_type"] == "internet":
+            content = internet_parser.parse(serializer.validated_data["source"])
+        serializer.save(content=content)
 
     @staticmethod
     def get_parser(data_type):
-        if data_type == "url":
-            return InternetParser
+        if data_type == "internet":
+            return internet_parser
         raise NotImplementedError
 
-    def create(self, request, *args, **kwargs):
-        doc_type = self.request.POST.get("type")
-        if not doc_type:
-            raise ValidationError("Type of recipe to create must be specified.")
-        if doc_type != "url":
-            raise ValidationError("Only ingestion from URL is supported at this time.")
-        return super().create(request, *args, **kwargs)
 
-    def perform_create(self, serializer):
-        parser = self.get_parser(serializer.data["recipe_type"])
-        # for now (simplest case), don't catch errors and don't save serializer if parsing fails
-        # FIXME: eventually this will be moved to an async job and the failures will be separted that way
-        parser.parse(serializer.content)
-        serializer.save()
+internet_parser = InternetParser()

@@ -19,42 +19,36 @@ class Parser(object):
         self.ingredients = []
         self.steps = []
 
-    def get_ingredient_parser():
+    def get_ingredient_parser(self):
         raise NotImplementedError
 
     def parse(self, content):
         self.ingredient_parser = self.get_ingredient_parser()
-        self.recipe_data['title'] = get_name(content)
-        self.recipe_data['cooking_time']['maximum'], self.recipe_data['cooking_time']['minimum'] = get_cooking_times(content)
-        self.recipe_data['serves']['maximum'], self.recipe_data['serves']['minimum'] = get_servings(content)
+        self.recipe_data['title'] = self.get_name(content)
+        self.recipe_data['cooking_time']['maximum'], self.recipe_data['cooking_time']['minimum'] = self.get_cooking_times(content)
+        self.recipe_data['serves']['maximum'], self.recipe_data['serves']['minimum'] = self.get_servings(content)
 
         raw_ingredients = parse_ingredients(content)
         for ingredient in raw_ingredients:
             self.ingredients.append(ingredient_parser(ingredient))
         self.steps = parse_steps(content)
 
-    @staticmethod
-    def get_name(content):
+    def get_name(self, content):
         raise NotImplementedError
 
-    @staticmethod
-    def get_servings(content):
+    def get_servings(self, content):
         raise NotImplementedError
 
-    @staticmethod
-    def get_cooking_times(content):
+    def get_cooking_times(self, content):
         raise NotImplementedError
 
-    @staticmethod
-    def parse_cooking_time(content):
+    def parse_cooking_time(self, content):
         raise NotImplementedError
 
-    @staticmethod
-    def parse_ingredients(content):
+    def parse_ingredients(self, content):
         raise NotImplementedError
 
-    @staticmethod
-    def parse_steps(content):
+    def parse_steps(self, content):
         raise NotImplementedError
 
 
