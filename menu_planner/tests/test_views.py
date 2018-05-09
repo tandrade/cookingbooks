@@ -8,15 +8,16 @@ from menu_planner.models import  InternetRecipe, Recipe
 
 class RecipeCreateTest(TestCase):
 
-    def fake_ingestor(self, _args=None):
+    def fake_parser(self, _args=None):
         return "This is content to ingest."
 
     def setUp(self):
         self.mock_url = "http://www.fakecooking.blog/recipe/1/"
 
     @httpretty.activate
-    @mock.patch('menu_planner.parsers.InternetParser.parse', fake_ingestor)
-    def test_create_recipe_saves_raw(self):
+    @mock.patch('menu_planner.parsers.InternetParser.parse', fake_parser)
+    @mock.patch('django.db.models.signals.post_save.send')
+    def test_create_recipe_saves_raw(self, signals_mock):
         mock_content = '''
             <html>
             This is content to ingest.
@@ -32,10 +33,10 @@ class RecipeCreateTest(TestCase):
         })
         self.assertEqual(response.status_code, 201)
         self.assertEqual(InternetRecipe.objects.count(), 1)
-
+        assert signals_mock.called
         saved = InternetRecipe.objects.first()
         self.assertEqual(saved.source, self.mock_url)
-        self.assertEqual(saved.content, self.fake_ingestor())
+        self.assertEqual(saved.content, self.fake_parser())
 
     def test_create_recipe_fails_with_unsupported_type(self):
         self.assertEqual(InternetRecipe.objects.count(), 0)
