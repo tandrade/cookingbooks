@@ -25,13 +25,14 @@ class Parser(object):
     def parse(self, content):
         self.ingredient_parser = self.get_ingredient_parser()
         self.recipe_data['title'] = self.get_name(content)
-        self.recipe_data['cooking_time']['maximum'], self.recipe_data['cooking_time']['minimum'] = self.get_cooking_times(content)
-        self.recipe_data['serves']['maximum'], self.recipe_data['serves']['minimum'] = self.get_servings(content)
-
-        raw_ingredients = parse_ingredients(content)
-        for ingredient in raw_ingredients:
-            self.ingredients.append(ingredient_parser(ingredient))
-        self.steps = parse_steps(content)
+        # TODO: implement each of these steps 
+        # self.recipe_data['cooking_time']['maximum'], self.recipe_data['cooking_time']['minimum'] = self.get_cooking_times(content)
+        # self.recipe_data['serves']['maximum'], self.recipe_data['serves']['minimum'] = self.get_servings(content)
+        #
+        # raw_ingredients = parse_ingredients(content)
+        # for ingredient in raw_ingredients:
+        #     self.ingredients.append(ingredient_parser(ingredient))
+        # self.steps = parse_steps(content)
 
     def get_name(self, content):
         raise NotImplementedError
@@ -61,5 +62,5 @@ class InternetParser(Parser):
     def get_ingredient_parser(self):
         return InternetIngredientParsers
 
-    def get_name(content):
-        pass
+    def get_name(self, content):
+        return content.title.string
