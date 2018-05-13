@@ -17,6 +17,7 @@ class TestInternetParser(TestCase):
 
     def test_basic_recipe_info(self):
         self.assertEqual(self.parser.recipe_data['title'], "Carrot Salad with Tahini, Chickpeas and Pistachios")
+        self.assertEqual(self.parser.recipe_data['cooking_time'], {'minimum': 30, 'maximum': 30})
 
     @unittest.skip("Redundant errors for now.")
     def test_creates_steps(self):
