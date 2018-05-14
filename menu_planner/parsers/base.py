@@ -1,16 +1,17 @@
-import re
-
-
 class IngredientListParser(object):
 
     def __init__(self, item):
-        self.name = get_ingredient_name(item)
-        self.quantity = get_quantity(item)
+        self.name = self.get_ingredient_name(item)
+        self.desc = self.get_ingredient_desc(item)
+        self.quantity = self.get_quantity(item)
 
-    def get_ingredient_name(object):
+    def get_ingredient_name(self, content):
         raise NotImplementedError
 
-    def get_quantity(object):
+    def get_ingredient_desc(self, content):
+        raise NotImplementedError
+
+    def get_quantity(self, content):
         raise NotImplementedError
 
 
@@ -39,10 +40,10 @@ class Parser(object):
             'minimum': minimum_servings
         }
 
-        #
-        # raw_ingredients = parse_ingredients(content)
-        # for ingredient in raw_ingredients:
-        #     self.ingredients.append(ingredient_parser(ingredient))
+
+        raw_ingredients = self.parse_ingredients(content)
+        for ingredient in raw_ingredients:
+            self.ingredients.append(self.ingredient_parser(ingredient))
         # self.steps = parse_steps(content)
 
     def parse_time_value(self, to_convert):
@@ -84,34 +85,3 @@ class Parser(object):
 
     def parse_steps(self, content):
         raise NotImplementedError
-
-
-class InternetIngredientParsers(IngredientListParser):
-    pass
-
-
-class InternetParser(Parser):
-
-    def get_ingredient_parser(self):
-        return InternetIngredientParsers
-
-    def get_name(self, content):
-        return content.title.string
-
-    def get_cooking_times(self, content):
-        time_value = content.find_all('time', {'class': 'totaltime'})[0].getText()
-        total_time = self.parse_time_value(time_value)
-        # right now if there's only one value set for a time, just repeat that time twice
-        return total_time, total_time
-
-    def get_servings(self, content):
-        recipe_metadata = content.find_all('ul', {'class': 'recipe_meta'})[0]
-        found_servings = False
-        max_servings = 0
-        min_servings = 0
-        for li in recipe_metadata:
-            if 'serves' in str(li).lower():
-                for tag in li.findAll('p'):
-                    raw_value = tag.getText()
-                    min_servings, max_servings = self.parse_servings(raw_value)
-        return min_servings, max_servings
