@@ -1,6 +1,5 @@
 from rest_framework import exceptions, viewsets
 
-from menu_planner.models import IngestedRecipe
 from menu_planner.parsers import InternetParser
 from menu_planner.serializers import InternetRecipeSerializer
 
@@ -8,7 +7,7 @@ from menu_planner.serializers import InternetRecipeSerializer
 class IngestedRecipeViewset(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
-        doc_type = self.request.POST.get("source_type")
+        doc_type = self.request.data.get("source_type")
         if doc_type == "internet":
             return InternetRecipeSerializer
         raise exceptions.ValidationError("That source type is not supported.")
