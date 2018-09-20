@@ -48,8 +48,13 @@ class RecipeCreateTest(TestCase):
         self.assertEqual(InternetRecipe.objects.count(), 0)
 
 
-class RecipeGetTest(TestCase):
+class RecipeViewTest(TestCase):
+
+    def setUp(self):
+        for ingredient in ["chickpeas", "carrots", "cumin"]:
+            models.Ingredient.objects.create(ingredient.lower())
+        Recipe.objects.create(title="Cool Recipe")
 
     def test_get_returns_all_recipes(self):
-        #TODO: implement me
-        pass
+        results = self.client.get(reverse("recipe-list"))
+        self.assertEqual(results.status_code, 200)

@@ -29,8 +29,7 @@ class InternetRecipe(IngestedRecipe):
     source = models.URLField() # for now, only supporting urls
 
     def parse_content(self):
-        return "Blah blah blah"
-        # return InternetIngestor().ingest(self.source)
+        return InternetIngestor().ingest(self.source)
 
 
 class Recipe(DateCreatedFieldObject):

@@ -1,3 +1,5 @@
+from menu_planner import models
+
 class IngredientListParser(object):
 
     def __init__(self, item):
@@ -16,6 +18,11 @@ class IngredientListParser(object):
 
 
 class Parser(object):
+    '''
+    Parses a recipe object, and creates database objects based on parsing result.
+    In the event of this taking a long period of time, this could be split into an async
+    job but for now it is a synchronous operation.
+    '''
 
     def __init__(self):
         self.recipe_data = {}
@@ -25,7 +32,16 @@ class Parser(object):
     def get_ingredient_parser(self):
         raise NotImplementedError
 
+    def create_recipe(self):
+        return models.Recipe.objects.create(
+            name=self.recipe_data['title'],
+            cooking_time_minutes=self.recipe_data['cooking_time']['maximum'], # maybe average?
+            serve_min=self.recipe_data['servers']['minimum'],
+            serve_max=self.recipe_data['servers']['maximum']
+        )
+
     def parse(self, content):
+        # first, parse metadata related to this recipe
         self.ingredient_parser = self.get_ingredient_parser()
         self.recipe_data['title'] = self.get_name(content)
         # TODO: implement each of these steps
@@ -40,11 +56,20 @@ class Parser(object):
             'minimum': minimum_servings
         }
 
+        recipe = self.create_recipe()
 
+        # second, parse ingredients
         raw_ingredients = self.parse_ingredients(content)
         for ingredient in raw_ingredients:
             self.ingredients.append(self.ingredient_parser(ingredient))
-        # self.steps = parse_steps(content)
+        self.get_or_create_ingredients()
+
+        # lastly, parse the recipe instructions
+        # FIXME: implement this -- for now, not the most important part.
+        # self.steps = self.parse_steps(content)
+
+    def get_or_create_ingredients(self):
+        pass
 
     def parse_time_value(self, to_convert):
         all_values = to_convert.split(" ")

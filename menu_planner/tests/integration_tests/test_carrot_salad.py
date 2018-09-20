@@ -4,10 +4,11 @@ import unittest
 
 from django.test import TestCase
 
+from menu_planner import models
 from menu_planner.parsers import InternetParser
 
 
-class TestInternetParser(TestCase):
+class TestCarrotSaladParsing(TestCase):
 
     def setUp(self):
         self.parser = InternetParser()
@@ -16,8 +17,15 @@ class TestInternetParser(TestCase):
             self.parser.parse(content)
 
     def test_basic_recipe_info(self):
-        self.assertEqual(self.parser.recipe_data['title'], "Carrot Salad with Tahini, Chickpeas and Pistachios")
-        self.assertEqual(self.parser.recipe_data['cooking_time'], {'minimum': 30, 'maximum': 30})
+        recipe_title = "Carrot Salad with Tahini, Chickpeas and Pistachios"
+        cooking_time = 30
+        self.assertEqual(self.parser.recipe_data['title'], recipe_title)
+        self.assertEqual(self.parser.recipe_data['cooking_time'], {'minimum': cooking_time, 'maximum': cooking_time})
+
+        self.assertEqual(models.Recipe.objects.count(), 1)
+        generated_recipe = models.Recipe.objects.first()
+        self.assertEqual(generated_recipe.name, recipe_title)
+        self.assertEqual(generated_recipe.cooking_time_minutes, cooking_time)
 
     def test_creates_ingredients(self):
         self.assertEqual(len(self.parser.ingredients), 12)
