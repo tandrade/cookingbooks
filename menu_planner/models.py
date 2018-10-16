@@ -34,7 +34,7 @@ class InternetRecipe(IngestedRecipe):
 
 class Recipe(DateCreatedFieldObject):
     name = models.CharField(max_length=300)
-    cooking_time_minutes = models.IntegerField()
+    cooking_time_minutes = models.IntegerField(null=True)
     serve_min = models.IntegerField(null=True)
     serve_max = models.IntegerField(null=True)
 

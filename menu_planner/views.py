@@ -1,7 +1,8 @@
-from rest_framework import exceptions, viewsets
+from rest_framework import exceptions, mixins, viewsets
 
+from menu_planner.models import Recipe
 from menu_planner.parsers import InternetParser
-from menu_planner.serializers import InternetRecipeSerializer
+from menu_planner.serializers import InternetRecipeSerializer, RecipeSerializer
 
 
 class IngestedRecipeViewset(viewsets.ModelViewSet):
@@ -23,6 +24,15 @@ class IngestedRecipeViewset(viewsets.ModelViewSet):
         if data_type == "internet":
             return internet_parser
         raise NotImplementedError
+
+
+
+class RecipeViewset(mixins.RetrieveModelMixin,
+                    mixins.ListModelMixin,
+                    viewsets.GenericViewSet):
+
+    serializer_class = RecipeSerializer
+    queryset = Recipe.objects.all()
 
 
 internet_parser = InternetParser()

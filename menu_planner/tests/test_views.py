@@ -1,9 +1,11 @@
 import httpretty
 from django.test import TestCase
 from django.urls import reverse
-from unittest import mock
+from unittest import mock, skip
 
-from menu_planner.models import  InternetRecipe, Recipe
+from menu_planner.models import (Ingredient,
+                                 InternetRecipe,
+                                 Recipe)
 
 
 class RecipeCreateTest(TestCase):
@@ -52,9 +54,44 @@ class RecipeViewTest(TestCase):
 
     def setUp(self):
         for ingredient in ["chickpeas", "carrots", "cumin"]:
-            models.Ingredient.objects.create(ingredient.lower())
-        Recipe.objects.create(title="Cool Recipe")
+            Ingredient.objects.create(name=ingredient.lower())
+        Recipe.objects.create(name="Cool Recipe")
 
     def test_get_returns_all_recipes(self):
         results = self.client.get(reverse("recipe-list"))
         self.assertEqual(results.status_code, 200)
+
+    def test_get_recipe(self):
+        r = Recipe.objects.first()
+        results = self.client.get(reverse("recipe-detail", args=[r.id]))
+        self.assertEqual(results.status_code, 200)
+
+    def test_post_not_allowed(self):
+        results = self.client.post(reverse("recipe-list"), data={
+            'title': 'Even Cooler Recipe'
+        })
+        self.assertEqual(results.status_code, 405)
+
+    def test_update_fails(self):
+        r = Recipe.objects.first()
+        results = self.client.patch(reverse("recipe-detail", args=[r.id]))
+        self.assertEqual(results.status_code, 405)
+
+    @skip("Not implemented yet.")
+    def test_filter_by_ingredient(self):
+        for ingredient in ["parsley", "apples", "spinach"]:
+            Ingredient.objects.create(name=ingredient.lower())
+        Recipe.objects.create(name="Different Recipe")
+        results = self.client.get(reverse("recipe-list"), {'ingredient': 'chickpeas'})
+        self.assertEqual(results.status_code, 200)
+        self.assertEqual(len(results.data), 1)
+        self.assertEqual(results.data[0].title, "Cool Recipe")
+
+    @skip("Not implemented yet.")
+    def test_advanced_filter_by_ingredient(self):
+        for ingredient in ["parsley", "apples", "spinach"]:
+            Ingredient.objects.create(name=ingredient.lower())
+        Recipe.objects.create(name="Different Recipe")
+        results = self.client.get(reverse("recipe-list"), {'ingredient': ['chickpeas', 'apples']})
+        self.assertEqual(results.status_code, 200)
+        self.assertEqual(len(results.data), 0)
