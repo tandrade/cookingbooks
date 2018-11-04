@@ -32,7 +32,14 @@ class RecipeViewset(mixins.RetrieveModelMixin,
                     viewsets.GenericViewSet):
 
     serializer_class = RecipeSerializer
-    queryset = Recipe.objects.all()
+
+    def get_queryset(self):
+        ingredients = self.request.query_params.getlist('ingredient')
+        if not ingredients:
+            return Recipe.objects.all()
+        return Recipe.objects.filter(ingredient_items__ingredient_id__name__in=[
+                 ingredient.lower() for ingredient in ingredients
+                ])
 
 
 internet_parser = InternetParser()
