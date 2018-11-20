@@ -5,7 +5,7 @@ class IngredientListParser(object):
     def __init__(self, item):
         self.name = self.get_ingredient_name(item)
         self.desc = self.get_ingredient_desc(item)
-        self.quantity = self.get_quantity(item)
+        self.quantity, self.denomination = self.get_quantity(item)
 
     def get_ingredient_name(self, content):
         raise NotImplementedError
@@ -62,14 +62,21 @@ class Parser(object):
         raw_ingredients = self.parse_ingredients(content)
         for ingredient in raw_ingredients:
             self.ingredients.append(self.ingredient_parser(ingredient))
-        self.get_or_create_ingredients()
+        self.get_or_create_ingredients(recipe)
 
         # lastly, parse the recipe instructions
         # FIXME: implement this -- for now, not the most important part.
         # self.steps = self.parse_steps(content)
 
-    def get_or_create_ingredients(self):
-        pass
+    def get_or_create_ingredients(self, created_recipe):
+        for detected in self.ingredients:
+            ingredient, _created = models.Ingredient.objects.get_or_create(name=detected.name.lower())
+            models.RecipeIngredientItem.objects.create(
+                ingredient_id=ingredient,
+                recipe_id=created_recipe,
+                amount=detected.quantity,
+                other_instructions=detected.desc
+            )
 
     def parse_time_value(self, to_convert):
         all_values = to_convert.split(" ")

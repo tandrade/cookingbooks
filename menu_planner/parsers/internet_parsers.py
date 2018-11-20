@@ -1,8 +1,9 @@
 from .base import IngredientListParser, Parser
+from .quantity_parsers import IngredientQuantityParserMixin
 import re
 
 
-class InternetIngredientParsers(IngredientListParser):
+class InternetIngredientParsers(IngredientListParser, IngredientQuantityParserMixin):
 
     def get_ingredient_name(self, content):
         full_name = content.findAll('span', {'class': 'name'})[0]
@@ -18,7 +19,9 @@ class InternetIngredientParsers(IngredientListParser):
 
     def get_quantity(self, content):
         desc = content.findAll('span', {'class': 'amount'})[0]
-        return desc.getText().strip()
+        quantity = desc.getText().strip()
+        amount, denomination = self.parse_quantity(quantity)
+        return amount, denomination
 
 
 class InternetParser(Parser):
