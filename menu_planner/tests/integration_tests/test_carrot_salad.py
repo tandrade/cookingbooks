@@ -28,7 +28,6 @@ class TestCarrotSaladParsing(TestCase):
         self.assertEqual(generated_recipe.name, recipe_title)
         self.assertEqual(generated_recipe.cooking_time_minutes, cooking_time)
 
-    @unittest.skip("FIXME: implement object creation.")
     def test_creates_ingredients(self):
         self.assertEqual(len(self.parser.ingredients), 12)
         self.assertEqual(Ingredient.objects.count(), 12)
@@ -48,8 +47,7 @@ class TestCarrotSaladParsing(TestCase):
             "salted pistachios"
         )
         self.assertEqual(list(all_names), [ingredient.name.lower() for ingredient in self.parser.ingredients])
-        self.assertEqual(list([r.name for r in Recipe.objects.all()]), list(all_names))
-
+        self.assertEqual(list([r.name for r in Ingredient.objects.all()]), list(all_names))
 
         all_desc = (
             "drained and rinsed",
@@ -65,9 +63,13 @@ class TestCarrotSaladParsing(TestCase):
         # spot checking how recipe ingredient items are created
         ri1 = RecipeIngredientItem.objects.get(recipe_id__name="chickpeas")
         self.assertEqual(ri1.other_instructions, "drained and rinsed")
+        self.assertEqual(ri1.amount, 15.5)
+        self.assertEqual(ri1.denomination, RecipeIngredientItem.MEASUREMENT_AMOUNT_CHOICES.OUNCES)
 
         ri2 = RecipeIngredientItem.objects.get(recipe_id__name="carrots")
         self.assertEqual(ri2.other_instructions, "peeled and coarsely grated")
+        self.assertEqual(ri1.amount, 1.0)
+        self.assertEqual(ri1.denomination, RecipeIngredientItem.MEASUREMENT_AMOUNT_CHOICES.POUNDS)
 
         all_quantities = (
             '1 (15.5-oz) can',

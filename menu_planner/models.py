@@ -48,12 +48,35 @@ class Ingredient(models.Model):
 class RecipeIngredientItem(models.Model):
     recipe_id = models.ForeignKey(Recipe, related_name='ingredient_items', on_delete=models.CASCADE)
     ingredient_id = models.ForeignKey(Ingredient, related_name='ingredient_items', on_delete=models.CASCADE)
-    # how much of this ingredient
-    amount = models.FloatField()
-    # what type of quantity (ex: cup? discrete amounts?)
-    denomination = models.CharField(max_length=150)
-    other_instructions = models.TextField()
+
+    other_instructions = models.TextField(null=True)
     optional = models.BooleanField(default=False)
+
+    # options for amounts
+    TEASPOON = 'tsp'
+    TABLESPOON = 'tbsp',
+    GRAM = 'g'
+    CUP = 'cup'
+    QUART = 'qt'
+    OUNCE = 'oz'
+    POUND = 'lb'
+    COUNT = 'ct'
+
+    MEASUREMENT_AMOUNT_CHOICES = (
+        (TEASPOON, 'teaspoon'),
+        (TABLESPOON, 'tablespoon'),
+        (GRAM, 'gram'),
+        (CUP, 'cup'),
+        (QUART, 'quart'),
+        (OUNCE, 'ounce'),
+        (POUND, 'pound'),
+        (COUNT, 'ct')
+    )
+
+    # how much and what unit of measurement
+    # defaults to 1 count (1 of the item)
+    amount = models.FloatField(default=1.0)
+    denomination = models.CharField(max_length=5, choices=MEASUREMENT_AMOUNT_CHOICES, default=COUNT)
 
 
 class RecipeStep(models.Model):

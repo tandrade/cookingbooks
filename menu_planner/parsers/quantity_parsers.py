@@ -34,8 +34,8 @@ class IngredientQuantityParserMixin():
         removable_chars = ["(", ")", "."]
         cleaned = txt
         for char in removable_chars:
-            cleaned = txt.replace(char, "")
-        words = txt.split(" ")
+            cleaned = cleaned.replace(char, "")
+        words = cleaned.split(" ")
         for index, word in enumerate(words[:-1]):
             numeric_value = self.numeric_value(word)
             following = self.numeric_value(words[index + 1])

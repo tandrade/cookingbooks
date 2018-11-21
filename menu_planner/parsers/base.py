@@ -1,4 +1,6 @@
 from menu_planner import models
+from menu_planner.serializers import IngredientSerializer, RecipeIngredientItemSerializer
+
 
 class IngredientListParser(object):
 
@@ -70,13 +72,24 @@ class Parser(object):
 
     def get_or_create_ingredients(self, created_recipe):
         for detected in self.ingredients:
-            ingredient, _created = models.Ingredient.objects.get_or_create(name=detected.name.lower())
-            models.RecipeIngredientItem.objects.create(
-                ingredient_id=ingredient,
-                recipe_id=created_recipe,
-                amount=detected.quantity,
-                other_instructions=detected.desc
-            )
+            ingredient_tosave = IngredientSerializer(data={'name': detected.name})
+            if ingredient_tosave.is_valid():
+                ingredient = ingredient_tosave.save()
+            else:
+                # TODO: add logging here
+                continue
+            serialized = RecipeIngredientItemSerializer(data={
+                'ingredient_id': ingredient.pk,
+                'recipe_id': created_recipe.pk,
+                'other_instructions': detected.desc,
+                'amount': detected.quantity,
+                'denomination': detected.denomination,
+            })
+            is_valid = serialized.is_valid()
+            if is_valid:
+                serialized.save()
+                continue
+            # TODO: add logging here for error cases
 
     def parse_time_value(self, to_convert):
         all_values = to_convert.split(" ")
