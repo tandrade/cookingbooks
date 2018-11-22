@@ -31,10 +31,13 @@ class IngredientQuantityParserMixin():
     ]
 
     def parse_quantity(self, txt):
-        removable_chars = ["(", ")", "."]
+        removable_chars = ["(", ")"]
+        spaced_chars = ["-"]
         cleaned = txt
         for char in removable_chars:
             cleaned = cleaned.replace(char, "")
+        for char in spaced_chars:
+            cleaned = cleaned.replace(char, " ")
         words = cleaned.split(" ")
         for index, word in enumerate(words[:-1]):
             numeric_value = self.numeric_value(word)

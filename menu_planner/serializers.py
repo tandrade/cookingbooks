@@ -11,7 +11,6 @@ class InternetRecipeSerializer(serializers.ModelSerializer):
         fields = ['source_type', 'content', 'source']
 
 
-
 class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -26,7 +25,7 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ['name']
 
     def validate_name(self, name):
-        # TODO: handle
+        # TODO: handle plurals
         return name.lower()
 
     def create(self, validated_data):
@@ -43,3 +42,6 @@ class RecipeIngredientItemSerializer(serializers.ModelSerializer):
             'recipe_id': {'write_only': True},
             'ingredient_id': {'write_only': True}
         }
+
+    def validate_denomination(self, value):
+        return value.replace('.', '').lower()

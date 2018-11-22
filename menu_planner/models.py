@@ -54,7 +54,7 @@ class RecipeIngredientItem(models.Model):
 
     # options for amounts
     TEASPOON = 'tsp'
-    TABLESPOON = 'tbsp',
+    TABLESPOON = 'tbsp'
     GRAM = 'g'
     CUP = 'cup'
     QUART = 'qt'
