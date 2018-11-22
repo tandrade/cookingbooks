@@ -35,6 +35,8 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 class RecipeIngredientItemSerializer(serializers.ModelSerializer):
 
+    denomination = serializers.SerializerMethodField()
+
     class Meta:
         model = models.RecipeIngredientItem
         fields = ['recipe_id', 'ingredient_id', 'other_instructions', 'optional', 'amount', 'denomination']
@@ -43,5 +45,6 @@ class RecipeIngredientItemSerializer(serializers.ModelSerializer):
             'ingredient_id': {'write_only': True}
         }
 
-    def validate_denomination(self, value):
-        return value.replace('.', '').lower()
+    def get_denomination(self, obj):
+        # FIXME: is there a better way to accomplish this?
+        return obj.denomiation.replace('.', '').lower() if obj.denomination else None

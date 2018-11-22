@@ -10,6 +10,11 @@ class IngredientQuantityParserTest(TestCase):
         self.assertEqual(num, 16)
         self.assertEqual(denom, "oz.")
 
+    def test_unicode_percentages(self):
+        num, denom = IngredientQuantityParserMixin().parse_quantity("½ tsp")
+        self.assertEqual(num, 0.5)
+        self.assertEqual(denom, "tsp")
+
     def test_recognize_parentheticals(self):
         # TODO: implement me
         num, denom = IngredientQuantityParserMixin().parse_quantity("1 (15.5 oz) can")

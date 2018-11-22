@@ -86,8 +86,6 @@ class Parser(object):
                 'denomination': detected.denomination,
             })
             is_valid = serialized.is_valid()
-            if not is_valid:
-                import pdb; pdb.set_trace()
             if is_valid:
                 serialized.save()
                 continue

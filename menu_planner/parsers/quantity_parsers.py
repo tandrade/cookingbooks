@@ -1,6 +1,13 @@
 class IngredientQuantityParserMixin():
 
+    unicode_matches = {
+        "\u00BD": 0.5,
+    }
+
     def numeric_value(self, to_parse):
+        unicode_match = self.unicode_matches.get(to_parse)
+        if unicode_match:
+            return unicode_match
         if "/" in to_parse:
             potential_fractions = to_parse.split("/")
             if len(potential_fractions) != 2:
