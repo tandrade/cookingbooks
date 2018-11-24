@@ -78,6 +78,8 @@ class Parser(object):
             else:
                 # TODO: add logging here
                 continue
+            # if ingredient.name == 'sea salt and red pepper flakes':
+            #     import pdb; pdb.set_trace()
             serialized = RecipeIngredientItemSerializer(data={
                 'ingredient_id': ingredient.pk,
                 'recipe_id': created_recipe.pk,

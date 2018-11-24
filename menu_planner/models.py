@@ -70,7 +70,7 @@ class RecipeIngredientItem(models.Model):
         (QUART, 'quart'),
         (OUNCE, 'ounce'),
         (POUND, 'pound'),
-        (COUNT, 'ct')
+        (COUNT, 'ct'), 
     )
 
     # how much and what unit of measurement

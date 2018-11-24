@@ -2,6 +2,26 @@ class IngredientQuantityParserMixin():
 
     unicode_matches = {
         "\u00BD": 0.5,
+        "\u2189": 0.0,
+        "\u2152": 0.1,
+        "\u2152": 0.1,
+        "\u2151": 0.111,
+        "\u215B": 0.125,
+        "\u2150": 0.142,
+        "\u2159": 0.167,
+        "\u2155": 0.2,
+        "\u00BC": 0.25,
+        "\u2153": 0.333,
+        "\u215C": 0.375,
+        "\u2156": 0.4,
+        "\u00BD": 0.5,
+        "\u2157": 0.6,
+        "\u215D": 0.625,
+        "\u2154": 0.667,
+        "\u00BE": 0.75,
+        "\u2158": 0.8,
+        "\u215A": 0.833,
+        "\u215E": 0.875,
     }
 
     def numeric_value(self, to_parse):
@@ -35,12 +55,15 @@ class IngredientQuantityParserMixin():
         'quart',
         'lb',
         'pound',
+        'to taste'
     ]
 
     def parse_quantity(self, txt):
         removable_chars = ["(", ")"]
         spaced_chars = ["-"]
         cleaned = txt
+        if txt.lower() == 'to taste':
+            return 0.01, "tsp"
         for char in removable_chars:
             cleaned = cleaned.replace(char, "")
         for char in spaced_chars:

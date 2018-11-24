@@ -61,32 +61,15 @@ class TestCarrotSaladParsing(TestCase):
         self.assertEqual(RecipeIngredientItem.objects.count(), 12)
 
         # spot checking how recipe ingredient items are created
-        ri1 = RecipeIngredientItem.objects.get(recipe_id__name="chickpeas")
+        ri1 = RecipeIngredientItem.objects.get(ingredient_id__name="chickpeas")
         self.assertEqual(ri1.other_instructions, "drained and rinsed")
         self.assertEqual(ri1.amount, 15.5)
-        self.assertEqual(ri1.denomination, RecipeIngredientItem.MEASUREMENT_AMOUNT_CHOICES.OUNCES)
+        self.assertEqual(ri1.denomination, RecipeIngredientItem.OUNCE)
 
-        ri2 = RecipeIngredientItem.objects.get(recipe_id__name="carrots")
+        ri2 = RecipeIngredientItem.objects.get(ingredient_id__name="carrots")
         self.assertEqual(ri2.other_instructions, "peeled and coarsely grated")
-        self.assertEqual(ri1.amount, 1.0)
-        self.assertEqual(ri1.denomination, RecipeIngredientItem.MEASUREMENT_AMOUNT_CHOICES.POUNDS)
-
-        all_quantities = (
-            '1 (15.5-oz) can',
-            '3 tbsp',
-            '½ tsp',
-            '¼ tsp',
-            '¼ cup',
-            '3 tbsp',
-            '2 tbsp',
-            '1 garlic clove',
-            '1 lb',
-            '¼ cup',
-            '¼ cup',
-        )
-
-        to_match_ingredients = [ingredient.quantity.lower() for ingredient in self.parser.ingredients if ingredient.quantity]
-        self.assertEqual(list(all_quantities), to_match_ingredients)
+        self.assertEqual(ri2.amount, 1.0)
+        self.assertEqual(ri2.denomination, RecipeIngredientItem.POUND)
 
     def test_creates_steps(self):
         pass

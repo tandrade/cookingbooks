@@ -17,7 +17,7 @@ class IngredientQuantityParserTest(TestCase):
 
     def test_recognize_parentheticals(self):
         # TODO: implement me
-        num, denom = IngredientQuantityParserMixin().parse_quantity("1 (15.5 oz) can")
+        num, denom = IngredientQuantityParserMixin().parse_quantity("1 (15.5-oz) can")
         self.assertEqual(num, 15.5)
         self.assertEqual(denom, "oz")
 
