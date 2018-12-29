@@ -43,6 +43,7 @@ class Recipe(DateCreatedFieldObject):
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=200)
+    normalized_name = models.CharField(max_length=200)  # for fast lookup 
 
 
 class RecipeIngredientItem(models.Model):
@@ -70,7 +71,7 @@ class RecipeIngredientItem(models.Model):
         (QUART, 'quart'),
         (OUNCE, 'ounce'),
         (POUND, 'pound'),
-        (COUNT, 'ct'), 
+        (COUNT, 'ct'),
     )
 
     # how much and what unit of measurement

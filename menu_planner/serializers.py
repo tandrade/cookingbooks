@@ -1,5 +1,9 @@
 from rest_framework import serializers
 from menu_planner import models
+from nltk.stem.porter import PorterStemmer
+
+
+stemmer = PorterStemmer()
 
 
 class InternetRecipeSerializer(serializers.ModelSerializer):
@@ -29,8 +33,17 @@ class IngredientSerializer(serializers.ModelSerializer):
         return name.lower()
 
     def create(self, validated_data):
-        instance, _created = models.Ingredient.objects.get_or_create(**validated_data)
-        return instance
+        normalized_name = stemmer.stem(validated_data['name'])
+        try:
+            instance = models.Ingredient.objects.get(normalized_name=normalized_name)
+            return instance
+        except models.Ingredient.DoesNotExist:
+            pass  # expected error
+        # technically there is a race condition here because this create operation is not in the same
+        # transaction as the get. in reality, this app will be too low traffic for this race condition to
+        # occur 
+        created = models.Ingredient.objects.create(name=validated_data['name'], normalized_name=normalized_name)
+        return created
 
 
 class DenominationField(serializers.CharField):
