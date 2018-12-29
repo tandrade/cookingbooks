@@ -1,0 +1,4 @@
+To do list: 
+- Expose an endpoint to let a user input structured data and create a recipe
+- Ingest recipe steps from a URL 
+- Add more internet recipes to make parsing code more robust
