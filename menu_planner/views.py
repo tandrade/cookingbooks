@@ -26,10 +26,7 @@ class IngestedRecipeViewset(viewsets.ModelViewSet):
         raise NotImplementedError
 
 
-
-class RecipeViewset(mixins.RetrieveModelMixin,
-                    mixins.ListModelMixin,
-                    viewsets.GenericViewSet):
+class RecipeViewset(viewsets.ModelViewSet):
 
     serializer_class = RecipeSerializer
 
