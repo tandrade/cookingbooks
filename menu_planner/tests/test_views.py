@@ -56,20 +56,9 @@ class RecipeRawCreateTest(TestCase):
     def test_create(self): 
         sample = {
             "ingredients": [
-                {
-                    "quantity": 1, 
-                    "name": "carrot"
-                }, 
-                {
-                    "quantity": 0.25, 
-                    "measurement": "tbsp", 
-                    "name": "salt"
-                }, 
-                {
-                    "quantity": "1", 
-                    "measurement": "cup", 
-                    "name": "rice"
-                }
+                [1, "carrot"], 
+                [0.25, "tsp", "salt"],
+                [1, "cup", "rice"]
             ], 
             "steps": [
                 "bring rice to a boil", 
