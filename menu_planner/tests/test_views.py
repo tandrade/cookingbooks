@@ -9,7 +9,7 @@ from menu_planner.models import (Ingredient,
                                  RecipeIngredientItem)
 
 
-class RecipeCreateTest(TestCase):
+class IngestedRecipeCreateTest(TestCase):
 
     def fake_parser(self, _args=None):
         return "This is content to ingest."
@@ -51,6 +51,35 @@ class RecipeCreateTest(TestCase):
         self.assertEqual(InternetRecipe.objects.count(), 0)
 
 
+class RecipeRawCreateTest(TestCase): 
+    
+    def test_create(self): 
+        sample = {
+            "ingredients": [
+                {
+                    "quantity": 1, 
+                    "name": "carrot"
+                }, 
+                {
+                    "quantity": 0.25, 
+                    "measurement": "tbsp", 
+                    "name": "salt"
+                }, 
+                {
+                    "quantity": "1", 
+                    "measurement": "cup", 
+                    "name": "rice"
+                }
+            ], 
+            "steps": [
+                "bring rice to a boil", 
+                "enjoy"
+            ]
+        }
+        result = self.client.post(reverse("recipe-list"), json=sample)
+        self.assertEqual(result.status_code, 201)
+
+
 class RecipeViewTest(TestCase):
 
     def setUp(self):
@@ -72,17 +101,6 @@ class RecipeViewTest(TestCase):
         r = Recipe.objects.first()
         results = self.client.get(reverse("recipe-detail", args=[r.id]))
         self.assertEqual(results.status_code, 200)
-
-    def test_post_not_allowed(self):
-        results = self.client.post(reverse("recipe-list"), data={
-            'title': 'Even Cooler Recipe'
-        })
-        self.assertEqual(results.status_code, 405)
-
-    def test_update_fails(self):
-        r = Recipe.objects.first()
-        results = self.client.patch(reverse("recipe-detail", args=[r.id]))
-        self.assertEqual(results.status_code, 405)
 
     def test_filter_by_ingredient(self):
         r = Recipe.objects.create(name="Different Recipe")

@@ -3,9 +3,9 @@ bs4==0.0.1
 decorator==4.2.1
 Django>=2.0.11
 django-nose==1.4.5
-djangorestframework==3.8.2
+djangorestframework>=3.9.1
 httpretty==0.9.4
 jsonfield==2.0.2
-nltk==3.4
-numpy==1.14.2
+nltk>=3.4.5
+numpy==1.18.3
 requests>=2.20.0
