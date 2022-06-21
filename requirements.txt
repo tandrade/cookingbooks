@@ -7,5 +7,5 @@ djangorestframework>=3.9.1
 httpretty==0.9.4
 jsonfield==2.0.2
 nltk>=3.4.5
-numpy==1.18.3
+numpy==1.22.0
 requests>=2.20.0
